@@ -30,7 +30,7 @@ def pad_sents(sents, pad_token):
 
     ### YOUR CODE HERE (~6 Lines)
     lengts = [ len(sentence) for sentence in sents ]
-    maxlen = max( lengths )
+    maxlen = max( lengts )
     
     for sentence in sents:
         while len( sentence ) < maxlen:
