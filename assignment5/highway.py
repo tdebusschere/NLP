@@ -19,13 +19,13 @@ import torch.nn.functional as F
 
 import random
 
-class Highway(nn.Module):
+class HighWay(nn.Module):
     """ 
         - Achieving Open Vocabulary Neural Machine Translation (Luong, et al. 2016/06)
     """
-    def __init_(self, word_embed_size):
-        super().__init__()
-        self.Wproj = nn.linear( word_embed_size, word_embed_size, bias=True)
+    def __init__(self, word_embed_size):
+        super(HighWay,self).__init__()
+        self.Wproj = nn.Linear( word_embed_size, word_embed_size, bias=True)
         self.Wgate = nn.Linear( word_embed_size, word_embed_size, bias=True)
     
     """ transforming  the layer result into a result"""
@@ -35,5 +35,5 @@ class Highway(nn.Module):
         x_proj = F.relu( self.Wproj( inputval ))
         x_gate = torch.sigmoid( self.Wgate( inputval ))
     
-        x_high = x_gate * xproj + (1 - x_gate) * inputval
+        x_high = x_gate * x_proj + (1 - x_gate) * inputval
         return( x_high )

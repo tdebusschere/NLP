@@ -12,6 +12,10 @@ Michael Hahn <mhahn2@stanford.edu>
 
 import torch.nn as nn
 
+from cnn import CNN
+from highway import HighWay
+from vocab import VocabEntry
+
 # Do not change these imports; your module names should be
 #   `CNN` in the file `cnn.py`
 #   `Highway` in the file `highway.py`
@@ -40,8 +44,13 @@ class ModelEmbeddings(nn.Module):
         ## End A4 code
 
         ### YOUR CODE HERE for part 1j
-
-
+        self.char_embed_size = 50
+        self.embed_size = embed_size
+        
+        self.char_embedding = nn.Embedding(len(vocab.char2id), self.char_embed_size, 0)
+        self.CNN = CNN(char_embed_size = self.char_embed_size, word_embed_size = self.embed_size, kernel_size = 5)
+        self.highway = HighWay( self.embed_size )
+        self.dropout = nn.Dropout(0.3)
         ### END YOUR CODE
 
     def forward(self, input):
@@ -59,7 +68,15 @@ class ModelEmbeddings(nn.Module):
         ## End A4 code
 
         ### YOUR CODE HERE for part 1j
+        batch_size, seq_len, max_word_length = input.shape[0], input.shape[1], input.shape[2]
+        
+        x_char_embed = self.char_embedding(input)
 
-
+        x_reshaped   = x_char_embed.permute(0,1,3,2)
+        x_conv       = self.CNN(x_reshaped.view(-1, self.char_embed_size,max_word_length))
+        x_highway = self.highway(x_conv)
+        x_word_embed = self.dropout(x_highway.view( batch_size, seq_len, self.embed_size))
+        return(x_word_embed)
+        
         ### END YOUR CODE
 
